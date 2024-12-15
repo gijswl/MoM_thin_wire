@@ -31,8 +31,8 @@ function assemble_global(msh::Mesh, src::Vector{<:Source}, f::Real, μ::Real, ε
     Eel = zeros(length(msh.edges))
     for s ∈ src
         if (typeof(s) == VoltageSource)
-            nm = nodes[msh.edges[s.edge]]
-            rm = nm[2] .- nm[1]
+            nm = msh.nodes[msh.edges[s.edge], :]
+            rm = nm[2, :] .- nm[1, :]
             ℓm = norm(rm)
             Eel[s.edge] += s.V / ℓm
         end
@@ -47,16 +47,16 @@ function assemble_global(msh::Mesh, src::Vector{<:Source}, f::Real, μ::Real, ε
     V = zeros(Complex{Float64}, ndofs)
 
     @timeit "outer loop" for (m, em) ∈ enumerate(msh.edges)
-        nm = nodes[em]
-        rm = nm[2] .- nm[1]
+        nm = msh.nodes[em, :]
+        rm = nm[2, :] .- nm[1, :]
         ℓm = norm(rm)
         bm = msh.basis_vecs[m, :]
 
         V[em] += [1; 1] * 0.5 * Eel[m] * ℓm
 
         for (n, en) ∈ enumerate(msh.edges)
-            nn = nodes[en]
-            rn = nn[2] .- nn[1]
+            nn = msh.nodes[en, :]
+            rn = nn[2, :] .- nn[1, :]
             ℓn = norm(rn)
             bn = msh.basis_vecs[n, :]
 
@@ -65,7 +65,7 @@ function assemble_global(msh::Mesh, src::Vector{<:Source}, f::Real, μ::Real, ε
 
             @timeit "element" for (p, qp) ∈ enumerate(quad)
                 ξp, wp = qp
-                rp = 0.5 * (ξp + 1) .* rm .+ nm[1]
+                rp = 0.5 * (ξp + 1) .* rm .+ nm[1, :]
                 ζp = 0.5 * (ξp + 1) * ℓm
 
                 fm1 = 0.5 * (1 - ξp)
@@ -77,12 +77,12 @@ function assemble_global(msh::Mesh, src::Vector{<:Source}, f::Real, μ::Real, ε
                 else
                     for (q, qq) ∈ enumerate(quad)
                         ξq, wq = qq
-                        rq = 0.5 * (ξq + 1) .* rn .+ nn[1]
+                        rq = 0.5 * (ξq + 1) .* rn .+ nn[1, :]
 
                         fn1 = 0.5 * (1 - ξq)
                         fn2 = 0.5 * (1 + ξq)
 
-                        Amn += 0.25 * ℓm * ℓn * wp * wq * (bm ⋅ bn) * [(fm1*fn1) (fm1⋅fn2); (fm2⋅fn1) (fm2⋅fn2)] * G(k, rp, rq)
+                        Amn += 0.25 * ℓm * ℓn * wp * wq * (bm ⋅ bn) * [(fm1*fn1) (fm1*fn2); (fm2*fn1) (fm2*fn2)] * G(k, rp, rq)
                         Φmn += 0.25 * wp * wq * [1 -1; -1 1] * G(k, rp, rq)
                     end
                 end
