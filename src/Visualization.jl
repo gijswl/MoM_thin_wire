@@ -1,5 +1,3 @@
-using GLMakie
-
 function plot_mesh(msh)
     f = Figure()
     ax1 = Axis3(f[1, 1])

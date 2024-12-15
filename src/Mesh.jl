@@ -5,6 +5,7 @@ struct Mesh
     edges
     end_points
     basis_vecs
+    wire_radius
 end
 
 function mesh_segment(r1, r2, Nel, start_idx)
