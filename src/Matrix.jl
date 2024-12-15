@@ -50,6 +50,7 @@ function assemble_global(msh::Mesh, src::Vector{<:Source}, f::Real, μ::Real, ε
         nm = nodes[em]
         rm = nm[2] .- nm[1]
         ℓm = norm(rm)
+        bm = msh.basis_vecs[m, :]
 
         V[em] += [1; 1] * 0.5 * Eel[m] * ℓm
 
@@ -57,6 +58,7 @@ function assemble_global(msh::Mesh, src::Vector{<:Source}, f::Real, μ::Real, ε
             nn = nodes[en]
             rn = nn[2] .- nn[1]
             ℓn = norm(rn)
+            bn = msh.basis_vecs[n, :]
 
             Amn = [0 0; 0 0]
             Φmn = [0 0; 0 0]
@@ -80,7 +82,7 @@ function assemble_global(msh::Mesh, src::Vector{<:Source}, f::Real, μ::Real, ε
                         fn1 = 0.5 * (1 - ξq)
                         fn2 = 0.5 * (1 + ξq)
 
-                        Amn += 0.25 * ℓm * ℓn * wp * wq * [(fm1*fn1) (fm1*fn2); (fm2*fn1) (fm2*fn2)] * G(k, rp, rq)
+                        Amn += 0.25 * ℓm * ℓn * wp * wq * (bm ⋅ bn) * [(fm1*fn1) (fm1⋅fn2); (fm2⋅fn1) (fm2⋅fn2)] * G(k, rp, rq)
                         Φmn += 0.25 * wp * wq * [1 -1; -1 1] * G(k, rp, rq)
                     end
                 end
