@@ -1,11 +1,17 @@
 
 
+"""
+    CalcFarField(msh, Isol, coords, f, μ, ε)
+
+Calculate the far-field electric field at coordinates `coords` using solution `Isol` on mesh `msh`.
+
+Higher-order quadrature appears to have no influence on the result, so a 1-point quadrature is hard-coded.
+"""
 function CalcFarField(msh, Isol, coords, f, μ, ε)
     c = 1 / √(μ * ε)
     ω = 2π * f
     k = ω / c
 
-    #
     E = zeros(Complex{Float64}, size(coords, 1), 3)
 
     @timeit "evaluation loop" for (i, coord) ∈ enumerate(eachrow(coords))

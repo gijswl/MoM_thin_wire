@@ -1,25 +1,52 @@
 using FastGaussQuadrature
 using LinearAlgebra
 
+"""
+    G(k, rm, rn)
+
+Dyadic Green's function with wavenumber `k`.
+"""
 function G(k, rm, rn)
     r = norm(rm .- rn)
     return exp(-1im * k * r) / (4π * r)
 end
 
+"""
+    S1(x, s, a, k)
+
+Analytic integral ∫ f(r) G(x, r) dr on segment `(x, s)` with wire radius `a` and wavenumber `k`.
+"""
 function S1(x, s, a, k)
     return (1 / s * √(a^2 + (x - s)^2) - 1 / s * √(a^2 + x^2) + x / s * log((x + √(a^2 + x^2)) / (x - s + √(a^2 + (x - s)^2))) - 1im * k * s / 2) / (4π)
 end
 
+"""
+    Ss(x, s, a, k)
+
+Analytic integral ∫ G(x, r) dr on segment `(x, s)` with wire radius `a` and wavenumber `k`.
+"""
 function S2(x, s, a, k)
     return 1 / s^2 * (log((x + √(a^2 + x^2)) / (x - s + √(a^2 + (x - s)^2))) - 1im * k * s) / (4π)
 end
 
+"""
+    get_quadrature(order)
+
+Calculate Gauss-Legendre quadrature points and weights
+"""
 function get_quadrature(order)
     x, w = gausslegendre(order)
 
     return [[x[i], w[i]] for i = eachindex(x)]
 end
 
+"""
+    assemble_global(msh::Mesh, src::Vector{<:Source}, f::Real, μ::Real, ε::Real; quad_order=4)
+
+Assemble the global system matrix corresponding to mesh `msh` and sources `src`, the frequency `f`, and medium parameters `μ`, `ε`.
+
+The quadrature order can be set through the optional argument `quad_order`.
+"""
 function assemble_global(msh::Mesh, src::Vector{<:Source}, f::Real, μ::Real, ε::Real; quad_order=4)
     c = 1 / √(μ * ε)
     ω = 2π * f
@@ -27,7 +54,7 @@ function assemble_global(msh::Mesh, src::Vector{<:Source}, f::Real, μ::Real, ε
 
     a = msh.wire_radius
 
-    # Define source vector
+    # Define electric field on each element (to calculate the source vector)
     Eel = zeros(length(msh.edges))
     for s ∈ src
         if (typeof(s) == VoltageSource)
@@ -91,6 +118,7 @@ function assemble_global(msh::Mesh, src::Vector{<:Source}, f::Real, μ::Real, ε
         end
     end
 
+    # Impose a Dirichlet boundary condition I = 0 on the end-points
     for ep ∈ msh.end_points
         Z[ep, :] .= 0
         Z[ep, ep] = 1

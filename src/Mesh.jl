@@ -1,13 +1,19 @@
 using LinearAlgebra
 
 struct Mesh
-    nodes
-    edges
-    end_points
-    basis_vecs
-    wire_radius
+    nodes       # N × 3 matrix of node coordinates
+    edges       # M-element vector of [n1, n2] edges
+    end_points  # Vector of nodes connected to only one edge
+    basis_vecs  # M × 3 matrix of basis vectors on the edges
+    wire_radius # Wire radius (assumed to be equal for all edges)
 end
 
+"""
+    mesh_segment(r1, r2, Nel, start_idx)
+
+Generate nodes and edges for a segment from `r1` to `r2` with `Nel` elements.
+To ensure correct connectivity when multiple segments are concatenated, `start_idx` can be set to the number of nodes already in the list.
+"""
 function mesh_segment(r1, r2, Nel, start_idx)
     Nn = Nel + 1
     x = range(0, 1, Nn)
@@ -18,6 +24,12 @@ function mesh_segment(r1, r2, Nel, start_idx)
     return nodes, edges
 end
 
+"""
+    get_end_points(nodes, edges)
+
+Get the indices of nodes connected to only one edge.
+These are required to enforce a zero current boundary condition.
+"""
 function get_end_points(nodes, edges)
     count = zeros(size(nodes, 1))
     for e ∈ edges
@@ -27,6 +39,11 @@ function get_end_points(nodes, edges)
     return findall(count .== 1)
 end
 
+"""
+    get_conn_edges(edges, node)
+
+Return the edges connecting to `node`.
+"""
 function get_conn_edges(edges, node)
     conn_e = Integer[]
 
@@ -39,6 +56,11 @@ function get_conn_edges(edges, node)
     return conn_e
 end
 
+"""
+    assign_basis_vector(nodes, edges)
+
+Assign basis vectors to the edges such that conservation of current is ensured.
+"""
 function assign_basis_vector(nodes, edges)
     a = zeros(length(edges), 3)
     visited = zeros(Bool, size(edges))
@@ -66,6 +88,11 @@ function assign_basis_vector(nodes, edges)
     return a
 end
 
+"""
+    calculate_basis_vector(nodes, edges, cur_edge, a, visited)
+
+Calculate a basis vector and next edge based on the state of the current edge and its neighbours.
+"""
 function calculate_basis_vector(nodes, edges, cur_edge, a, visited)
     n = edges[cur_edge]
     neighbours1 = filter!(e -> e ≠ cur_edge, get_conn_edges(edges, n[1]))
