@@ -1,0 +1,102 @@
+\section{Method of Moments}
+
+\subsection{Discretization}
+Starting from the EFIE, we expand the unknown current distribution $\vec{J}(\vecr)$ into a series of basis functions:
+\begin{equation}
+	\vec{J}(\vecr) = \sum_{n = 1}^{N} I_n \vec{f}_n(\vecr),
+	\label{eq:j_exp}
+\end{equation}
+where $I_n$ are the unknown coefficients representing the current, and $\vec{f}_n(\vecr)$ are the vector basis functions. Many choices of basis  are possible, but we will use the triangular basis functions shown in Figure~\ref{fig:mom_basis}. The orientation of the basis vectors is further discussed in Section~\ref{sec:mom_bc}.
+\begin{figure}[!ht]
+	\centering
+	
+	\caption{Triangular basis function}
+	\label{fig:mom_basis}
+\end{figure}
+
+Substituting (\ref{eq:j_exp}) into the EFIE, the $\oL$ operator now operates on the (known) basis functions.
+\begin{equation}
+	\vec{E}(\vecr) = j\omega\mu \sum_{n = 1}^{N} I_n (\oL \vec{f}_n)(\vecr)
+	\label{eq:efie_exp}
+\end{equation}
+Next, we can test (\ref{eq:efie_exp}) with the same basis functions $\vec{f}_m(\vecr)$ with $m = 1, \dots, N$.
+\begin{equation}
+	\langle \vec{f}_m, \vec{E} \rangle = j\omega\mu \sum_{n = 1}^{N} I_n \langle \vec{f}_m, \oL \vec{f}_n \rangle \qquad m = 1, \dots, N
+\end{equation}
+This results in a square $N \times N$ system of equations.
+\begin{equation}
+	\begin{Bmatrix}
+		V
+	\end{Bmatrix} = \begin{bmatrix}
+		Z
+	\end{bmatrix} \begin{Bmatrix}
+		I
+	\end{Bmatrix},
+\end{equation}
+with
+\begin{align*}
+	V_m & = \int_{f_m} \vec{f}_m(\vecr) \cdot \vec{E}(\vecr) d\vecr \\
+	Z_{mn} & = j\omega\mu \int_{f_m} \int_{f_n} \vec{f}_m(\vecr) \cdot \vec{f}_n(\vecrp) G_k(\vecr, \vecrp) d\vecrp d\vecr \\
+	 & - \frac{1}{j\omega} \int_{f_m} \int_{f_n} \nabla \cdot \vec{f}_m(\vecr) \nabla^\prime \cdot \vec{f}_n(\vecrp) G_k(\vecr, \vecrp) d\vecrp d\vecr
+\end{align*}
+For ease of notation and to clarify the physical role each integral term plays, we redefine the impedance contribution in terms of the vector potential $\vec{A}$ and the scalar potential $\Phi$.
+\begin{equation}
+	Z_{mn} = j\omega\mu A_{mn} - \frac{j}{\omega\varepsilon} \Phi_{mn} = j k \eta_0 \left(A_{mn} - \frac{1}{k^2} \Phi_{mn} \right),
+\end{equation}
+where
+\begin{align}
+	A_{mn} & = \int_{f_m} \int_{f_n} \vec{f}_m(\vecr) \cdot \vec{f}_n(\vecrp) G_k(\vecr, \vecrp) d\vecrp d\vecr \\
+	\Phi_{mn} & = \int_{f_m} \int_{f_n} \nabla \cdot \vec{f}_m(\vecr) \nabla^\prime \cdot \vec{f}_n(\vecrp) G_k(\vecr, \vecrp) d\vecrp d\vecr
+\end{align}
+
+\subsection{Practical Matrix Assembly per Element}
+
+\subsection{Boundary Conditions}
+\label{sec:mom_bc}
+Two boundary conditions arise from the equation of charge conservation:
+\begin{enumerate}
+	\item The basis vectors $\vec{a}_n$ should be oriented such that (\ref{eq:charge_cons}) holds at every node.
+	\item A condition $I = 0$ must be imposed on the end-points of every segment, as this is the only way to enforce (\ref{eq:charge_cons}).
+\end{enumerate}
+\begin{equation}
+	\nabla \cdot \vec{J} = 0
+	\label{eq:charge_cons}	
+\end{equation}
+
+\subsection{Post-processing}
+
+\subsubsection{Antenna impedance}
+To calculate the impedance seen by a source embedded in segment $e$, with nodes $n_1, n_2$, we make use of the current coefficient vector $\begin{Bmatrix}
+	I
+\end{Bmatrix}$. The impedance is defined as
+\begin{equation}
+	Z = \frac{V_{src}}{I_{src}},
+\end{equation}
+where $V_{src}$ is the known source voltage and $I_{src}$ is the solved current averaged over segment $e$:
+\begin{equation*}
+	I_{src} = \frac{1}{2}\left( I[n_1] + I[n_2] \right)
+\end{equation*}
+
+\subsubsection{Far-field radiation}
+The far-field radiation pattern can also be derived from the solved current vector. The EFIE can be simplified by assuming that the $\nicefrac{1}{r}$ are dominant, and that higher order terms have negligible amplitude in the far field.
+\begin{equation}
+	\vec{E}(\vecr) = -j\omega\mu \int \vec{J}(\vecrp) G_k(\vecr, \vecrp) d\vecrp
+	\label{eq:ff_efie}
+\end{equation}
+This expression can be further simplified by considering that $\vecr \gg \vecrp$, such that
+\begin{equation}
+	|\vecr - \vecrp| = \left\{ \begin{array}{ll}
+		r \quad & \text{for amplitude variations} \\
+		r - \vecrp \cdot \hat{\vecr} \quad & \text{for phase variations}
+	\end{array} \right.
+	\label{eq:ff_approx}
+\end{equation}
+Applying (\ref{eq:ff_approx}) to (\ref{eq:ff_efie}) yields
+\begin{equation}
+	\vec{E}(\vecr) = j\omega\mu \frac{e^{-j k r}}{4\pi r} \int ((\hat{\vecr} \cdot \vec{J}(\vecrp)) \hat{\vecr} - \vec{J}(\vecrp)) e^{j k \vecrp \cdot \hat{\vecr}} d\vecrp
+\end{equation}
+Applying the same discretization procedure,
+\begin{equation}
+	\vec{E}(\vecr) = j\omega\mu \frac{e^{-j k r}}{4\pi r} \sum_{n = 1}^{N} I_n \int_{f_n} ((\hat{\vecr} \cdot \hat{\vec{a}}_n) \hat{\vecr} - \hat{\vec{a}}_n) f_n(\vecrp) e^{j k \vecrp \cdot \hat{\vecr}} d\vecrp
+\end{equation}
+The integral can be tackled using quadrature and all the terms are known.

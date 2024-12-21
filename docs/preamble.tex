@@ -1,0 +1,60 @@
+% Layout
+%\usepackage[top=2.54cm, bottom=3.04cm, left=2.74cm, right=2.75cm]{geometry}
+%\usepackage{parskip}
+
+% Font
+\usepackage[T1]{fontenc}
+\usepackage{helvet}
+\usepackage{upquote}
+
+\renewcommand*\familydefault{\sfdefault}
+
+% Graphics
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{xcolor}
+
+\usepackage{tikz}
+\usepackage[oldvoltagedirection]{circuitikz}
+
+\usepackage{pgfplots}
+
+% Math
+\usepackage{amsmath, amsfonts, mathtools, amsthm, amssymb}
+\usepackage{unicode-math}
+\usepackage{bm} 		% Bold math
+\usepackage{nicefrac}
+
+\AtBeginDocument{
+	\renewcommand{\vec}[1]{\mathbf{#1}}
+}
+
+\newcommand{\vecr}{\ensuremath{\vec{r}}}
+\newcommand{\vecrp}{\ensuremath{\vec{r}^\prime}}
+
+\newcommand{\oL}{\mathcal{L}}
+
+% SI units
+\usepackage{siunitx}
+\sisetup{
+	range-units = single,
+	range-phrase = {--},
+	per-mode = symbol,
+	per-symbol = {/},
+	bracket-unit-denominator = true,
+	list-units = single,
+	list-final-separator = { en },
+	list-pair-separator = { en }
+}
+
+% Packages
+\usepackage{textcomp}
+\usepackage{url}
+\usepackage{hyperref}
+
+\hypersetup{
+	colorlinks,
+	linkcolor = {black!50!black},
+	citecolor = {blue!50!black},
+	urlcolor = {blue!80!black}
+}
