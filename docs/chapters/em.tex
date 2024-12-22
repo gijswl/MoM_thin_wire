@@ -1,15 +1,17 @@
 \section{Electromagnetic Theory}
 
 \subsection{Maxwell's Equations}
-
+In a homogeneous region with permittivity $\varepsilon$ and permeability $\mu$, Maxwell's equations describe the electric fields $\vec{E}, \vec{D}$ and magnetic fields $\vec{H}, \vec{B}$.
 \begin{align}
-	\nabla \times \vec{E} & = -j\omega\mu\vec{H} \\
-	\nabla \times \vec{H} & = j\omega\varepsilon\vec{E} + \vec{J}_0 \\
-	\nabla \cdot \vec{D} & = \rho \\
-	\nabla \cdot \vec{B} & = 0
+	\nabla \times \vec{E} & = -j\omega\mu\vec{H}, \label{eq:maxwell_E} \\
+	\nabla \times \vec{H} & = j\omega\varepsilon\vec{E} + \vec{J}_0, \label{eq:maxwell_H} \\
+	\nabla \cdot \vec{D} & = \rho, \label{eq:maxwell_D} \\
+	\nabla \cdot \vec{B} & = 0, \label{eq:maxwell_B}
 \end{align}
+where $\vec{B} = \mu \vec{H}$ and $\vec{D} = \varepsilon \vec{E}$. We assume a time-harmonic formulation with time dependence $e^{j\omega t}$ throughout the text.
 
 \subsection{Green's Functions}
+A Green's function is the impulse response of a linear differential equations on a specified domain. Using the superposition principle, the solution of a differential equation can be expressed as a sum of Green's functions. This property will allow us to write an integral equation for the electric field in Section~\ref{sec:em_efie}.
 
 \subsubsection{Electrostatic Green's Function}
 Consider the electrostatic Poisson equation
@@ -40,7 +42,7 @@ Therefore, the electrostatic Green's function becomes
 \begin{equation}
 	G(\vecr, \vecrp) = \frac{1}{4\pi \varepsilon r}, \qquad r = |\vecr - \vecrp|.
 \end{equation}
-Then, the electric potential due to an arbitrary charge distribution $\rho(\vecr)$ is given by
+Then, the electric potential due to an arbitrary charge distribution $\rho(\vecr)$ is 
 \begin{equation}
 	\phi(\vecr) = \iiint G(\vecr, \vecrp) \rho(\vecrp) d\vecrp = \frac{1}{4\pi\varepsilon} \iiint \frac{\rho(\vecrp)}{|\vecr - \vecrp|} d\vecrp
 \end{equation}
@@ -78,6 +80,8 @@ Therefore, we find that the coefficient $a = \frac{1}{4\pi}$ and the electrodyna
 \end{equation}
 
 \subsection{Electric Field Integral Equation (EFIE)}
+\label{sec:em_efie}
+Taking the curl of (\ref{eq:maxwell_E}) we obtain
 \begin{equation*}
 	\nabla \times \nabla \times \vec{E}  = -j\omega\mu (j\omega\varepsilon \vec{E} + \vec{J}) = \nabla (\nabla \cdot \vec{E}) - \nabla^2 \vec{E}
 \end{equation*}

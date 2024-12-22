@@ -23,7 +23,7 @@ Next, we can test (\ref{eq:efie_exp}) with the same basis functions $\vec{f}_m(\
 \begin{equation}
 	\langle \vec{f}_m, \vec{E} \rangle = j\omega\mu \sum_{n = 1}^{N} I_n \langle \vec{f}_m, \oL \vec{f}_n \rangle \qquad m = 1, \dots, N
 \end{equation}
-This results in a square $N \times N$ system of equations.
+This results in a dense, square $N \times N$ system of equations.
 \begin{equation}
 	\begin{Bmatrix}
 		V
@@ -90,7 +90,7 @@ Therefore, the scalar potential terms become
 \end{align*}
 
 \subsubsection{Self Terms}
-If the basis functions $n, m$ overlap (see Figure~\ref{fig:mom_basis3}), then we must treat the singularity that arises in the integral of the Green's function. We can do this by evaluating the inner integral analytically, and the outer integral numerically using an $M$-point quadrature rule. Assume that the singularity is in the $++$ direction. For the vector potential term,
+If the basis functions $n, m$ overlap (see Figure~\ref{fig:mom_basis3}), then we must treat the singularity that arises in the integral of the Green's function. We can do this by evaluating the inner integral analytically, and the outer integral numerically using an $M$-point quadrature rule. Assume that the singularity is in the $++$ direction (only possible when $m = n$). For the vector potential term,
 \begin{figure}[b]
 	\centering
 	\input{figures/mom_basis3.tex}
@@ -105,11 +105,29 @@ And for the scalar potential term,
 \begin{equation*}
 	\Phi_{mn}^{++} = \frac{\ell_m^+}{2} \sum_{p = 1}^M w_p \frac{1}{\ell_m^+ \ell_n^+} \int_{f_n} G(\vecr_p^+, \vecrp) d\vecrp  = \frac{\ell_m^+}{2} \sum_{p = 1}^M w_p S_2(\vecr_p^+)
 \end{equation*}
-where we define $S_1(r)$ and $S_2(r)$ as follows
+where we define $S_1$ and $S_2$ as follows
 \begin{align}
 	S_1(\vecr) & = \int_{f_n} f_n(\vecrp) G(\vecr, \vecrp) d\vecrp \\
-	S_2(\vecr) & = \frac{1}{\ell_m \ell_n} \int_{f_n} G(\vecr, \vecrp) d\vecrp
+	S_2(\vecr) & = \frac{1}{s^2} \int_{f_n} G(\vecr, \vecrp) d\vecrp
 \end{align}
+where $s$ is the length of the segment containing the singularity. 
+
+\subsubsection{Thin-Wire Approximation}
+To find an analytical expression for the integrals $S_1$ and $S_2$, we apply the thin-wire approximation. That is, we assume that the one-dimensional elements are in fact wires with a radius $a$ which is small compared to the length of the element $\ell_n$ and the wavelength $\lambda$. We redefine the distance between $\vecr$ and $\vecrp$ as
+\begin{equation*}
+	|\vecr - \vecrp| = \sqrt{(r - r^\prime)^2 + a^2}
+\end{equation*}
+Then, the two integrals can be evaluated analytically. The detailed derivation is presented in Gibson, 2022.
+\begin{equation}
+	\begin{aligned}
+		S_1(x, s) & = \frac{1}{4\pi} \left[ \frac{1}{s} \sqrt{a^2 + (x - s)^2} - \frac{1}{s} \sqrt{a^2 + x^2} \right. \\
+		 & + \left. \frac{x}{s} \frac{\log\left( x + \sqrt{x^2 + a^2} \right)}{x - s + \sqrt{a^2 + (x - s)^2}} - \frac{j k s}{2} \right]
+	\end{aligned}
+\end{equation}
+
+\begin{equation}
+	S_2(x, s) = \frac{1}{4\pi s^2} \left[ \frac{\log\left( x + \sqrt{x^2 + a^2} \right)}{x - s + \sqrt{a^2 + (x - s)^2}} - j k s\right]
+\end{equation}
 
 \subsection{Practical Matrix Assembly per Element}
 
