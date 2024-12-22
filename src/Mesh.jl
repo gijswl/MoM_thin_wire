@@ -24,6 +24,21 @@ function mesh_segment(r1, r2, Nel, start_idx)
     return nodes, edges
 end
 
+function mesh_loop(x, R, Nel, start_idx)
+    Nn = Nel
+    θs = range(0, 2π, Nn)
+
+    nodes = zeros(Nn, 3)
+    for (i, θ) ∈ enumerate(θs)
+        nodes[i, :] = [(R * cos(θ)) (R * sin(θ)) 0] .+ x
+    end
+    
+    edges = [[i, i + 1] for i ∈ (start_idx:start_idx+Nel-1)]
+    edges[end][2] = edges[1][1] # Close the loop
+
+    return nodes, edges
+end
+
 """
     get_end_points(nodes, edges)
 
