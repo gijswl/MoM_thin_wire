@@ -9,7 +9,7 @@ Starting from the EFIE, we expand the unknown current distribution $\vec{J}(\vec
 where $I_n$ are the unknown coefficients representing the current, and $\vec{f}_n(\vecr)$ are the vector basis functions. Many choices of basis  are possible, but we will use the triangular basis functions shown in Figure~\ref{fig:mom_basis}. The orientation of the basis vectors is further discussed in Section~\ref{sec:mom_bc}.
 \begin{figure}[!ht]
 	\centering
-	
+	\input{figures/mom_basis.tex}
 	\caption{Triangular basis function}
 	\label{fig:mom_basis}
 \end{figure}
@@ -45,8 +45,70 @@ For ease of notation and to clarify the physical role each integral term plays, 
 \end{equation}
 where
 \begin{align}
-	A_{mn} & = \int_{f_m} \int_{f_n} \vec{f}_m(\vecr) \cdot \vec{f}_n(\vecrp) G_k(\vecr, \vecrp) d\vecrp d\vecr \\
-	\Phi_{mn} & = \int_{f_m} \int_{f_n} \nabla \cdot \vec{f}_m(\vecr) \nabla^\prime \cdot \vec{f}_n(\vecrp) G_k(\vecr, \vecrp) d\vecrp d\vecr
+	A_{mn} & = \int_{f_m} \int_{f_n} \vec{f}_m(\vecr) \cdot \vec{f}_n(\vecrp) G_k(\vecr, \vecrp) d\vecrp d\vecr \label{eq:Amn} \\
+	\Phi_{mn} & = \int_{f_m} \int_{f_n} \nabla \cdot \vec{f}_m(\vecr) \nabla^\prime \cdot \vec{f}_n(\vecrp) G_k(\vecr, \vecrp) d\vecrp d\vecr \label{eq:Pmn}
+\end{align}
+
+\subsubsection{Quadrature}
+
+\begin{equation}
+	\int_{-1}^{+1} I(x) dx \approx \sum_{p = 1}^{M} w_p I(x_p),
+\end{equation}
+with quadrature weights $w_p$ and quadrature points $x_p$. In the Julia code, Gauss-Legendre quadrature is used.
+
+\subsubsection{Non-Self Terms}
+The basis and testing functions are defined on (two-dimensional) segments of thin wire in three-dimensional space. Considering a pair of non-overlapping basis functions $n,m$, we can calculate the integrals numerically by applying a quadrature rule to both integrals. Because each shape function consists of two parts (for triangular basis functions), we can split the contributions into four parts.
+\begin{align}
+	A_{mn} & = A_{mn}^{++} + A_{mn}^{+-} + A_{mn}^{-+} + A_{mn}^{--} \\
+	\Phi_{mn} & = \Phi_{mn}^{++} + \Phi_{mn}^{+-} + \Phi_{mn}^{-+} + \Phi_{mn}^{--}
+\end{align}
+The contributions to the vector potential are derived from (\ref{eq:Amn}). The superscripts refer to the positive and negative elements belonging to the basis functions $m$ and $n$ as defined in Figure~\ref{fig:mom_basis2}.
+\begin{figure}
+	\centering
+	\input{figures/mom_basis2.tex}
+	\caption{Definition of (non-overlapping) basis functions.}
+	\label{fig:mom_basis2}
+\end{figure}
+\begin{align*}
+	A_{mn}^{++} & = \hat{\vec{a}}_m^{+} \cdot \hat{\vec{a}}_n^{+} \frac{\ell_m^{+} \ell_n^{+}}{4} \sum_{p = 1}^M \sum_{q = 1}^M w_p w_q f_m(\vec{r}_p^{+}) f_n(\vec{r}_q^{+}) G(\vec{r}_p^{+}, \vec{r}_q^{+}) \\
+	A_{mn}^{+-} & = \hat{\vec{a}}_m^{+} \cdot \hat{\vec{a}}_n^{-} \frac{\ell_m^{+} \ell_n^{-}}{4} \sum_{p = 1}^M \sum_{q = 1}^M w_p w_q f_m(\vec{r}_p^{+}) f_n(\vec{r}_q^{-}) G(\vec{r}_p^{+}, \vec{r}_q^{-}) \\
+	A_{mn}^{-+} & = \hat{\vec{a}}_m^{-} \cdot \hat{\vec{a}}_n^{+} \frac{\ell_m^{-} \ell_n^{+}}{4} \sum_{p = 1}^M \sum_{q = 1}^M w_p w_q f_m(\vec{r}_p^{-}) f_n(\vec{r}_q^{+}) G(\vec{r}_p^{-}, \vec{r}_q^{+}) \\
+	A_{mn}^{--} & = \hat{\vec{a}}_m^{-} \cdot \hat{\vec{a}}_n^{-} \frac{\ell_m^{-} \ell_n^{-}}{4} \sum_{p = 1}^M \sum_{q = 1}^M w_p w_q f_m(\vec{r}_p^{-}) f_n(\vec{r}_q^{-}) G(\vec{r}_p^{-}, \vec{r}_q^{-})
+\end{align*}
+Similarly, for the scalar potential contributions. Here, we can pre-calculate the divergence of the basis functions, which is constant over the element (for triangular basis functions).
+\begin{align}
+	\nabla \cdot \vec{f}_m^{+}(\vecr) & = \frac{-1}{\ell_m^+} \qquad \vecr \in \operatorname{supp}(f_m^+) \\
+	\nabla \cdot \vec{f}_m^{-}(\vecr) & = \frac{+1}{\ell_m^-} \qquad \vecr \in \operatorname{supp}(f_m^-)
+\end{align}
+Therefore, the scalar potential terms become
+\begin{align*}
+	\Phi_{mn}^{++} & = \frac{-1}{\ell_{m}^{+}} \frac{-1}{\ell_{m}^{+}} \frac{\ell_m^{+} \ell_n^{+}}{4} \sum_{p = 1}^M \sum_{q = 1}^M w_p w_q G(\vec{r}_p^{+}, \vec{r}_q^{+}) \\
+	& = \frac{1}{4} \sum_{p = 1}^M \sum_{q = 1}^M w_p w_q G(\vec{r}_p^{+}, \vec{r}_q^{+}) \\
+	\Phi_{mn}^{+-} & = -\frac{1}{4} \sum_{p = 1}^M \sum_{q = 1}^M w_p w_q G(\vec{r}_p^{+}, \vec{r}_q^{-}) \\
+	\Phi_{mn}^{-+} & = -\frac{1}{4} \sum_{p = 1}^M \sum_{q = 1}^M w_p w_q G(\vec{r}_p^{-}, \vec{r}_q^{+}) \\
+	\Phi_{mn}^{--} & = \frac{1}{4} \sum_{p = 1}^M \sum_{q = 1}^M w_p w_q G(\vec{r}_p^{-}, \vec{r}_q^{-})
+\end{align*}
+
+\subsubsection{Self Terms}
+If the basis functions $n, m$ overlap (see Figure~\ref{fig:mom_basis3}), then we must treat the singularity that arises in the integral of the Green's function. We can do this by evaluating the inner integral analytically, and the outer integral numerically using an $M$-point quadrature rule. Assume that the singularity is in the $++$ direction. For the vector potential term,
+\begin{figure}[b]
+	\centering
+	\input{figures/mom_basis3.tex}
+	\caption{Definition of (overlapping) basis functions.}
+	\label{fig:mom_basis3}
+\end{figure}
+\begin{align*}
+	A_{mn}^{++} & = \hat{\vec{a}}_m^{+} \cdot \hat{\vec{a}}_n^{+} \frac{\ell_m^+}{2} \sum_{p = 1}^M w_p f_m(\vec{r}_p^+) \int_{f_n} f_n(\vecrp) G(\vecr_p^+, \vecrp) d\vecrp \\
+	& = \hat{\vec{a}}_m^{+} \cdot \hat{\vec{a}}_n^{+} \frac{\ell_m^+}{2} \sum_{p = 1}^M w_p f_m(\vec{r}_p^+) S_1(\vecr_p^+)
+\end{align*}
+And for the scalar potential term,
+\begin{equation*}
+	\Phi_{mn}^{++} = \frac{\ell_m^+}{2} \sum_{p = 1}^M w_p \frac{1}{\ell_m^+ \ell_n^+} \int_{f_n} G(\vecr_p^+, \vecrp) d\vecrp  = \frac{\ell_m^+}{2} \sum_{p = 1}^M w_p S_2(\vecr_p^+)
+\end{equation*}
+where we define $S_1(r)$ and $S_2(r)$ as follows
+\begin{align}
+	S_1(\vecr) & = \int_{f_n} f_n(\vecrp) G(\vecr, \vecrp) d\vecrp \\
+	S_2(\vecr) & = \frac{1}{\ell_m \ell_n} \int_{f_n} G(\vecr, \vecrp) d\vecrp
 \end{align}
 
 \subsection{Practical Matrix Assembly per Element}
@@ -91,7 +153,7 @@ This expression can be further simplified by considering that $\vecr \gg \vecrp$
 	\end{array} \right.
 	\label{eq:ff_approx}
 \end{equation}
-Applying (\ref{eq:ff_approx}) to (\ref{eq:ff_efie}) yields
+where $r = |\vecr|$ and $\hat{\vecr} = \nicefrac{\vecr}{|\vecr|}$. Applying (\ref{eq:ff_approx}) to (\ref{eq:ff_efie}) yields
 \begin{equation}
 	\vec{E}(\vecr) = j\omega\mu \frac{e^{-j k r}}{4\pi r} \int ((\hat{\vecr} \cdot \vec{J}(\vecrp)) \hat{\vecr} - \vec{J}(\vecrp)) e^{j k \vecrp \cdot \hat{\vecr}} d\vecrp
 \end{equation}
