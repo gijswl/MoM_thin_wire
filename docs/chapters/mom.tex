@@ -64,7 +64,7 @@ The basis and testing functions are defined on (two-dimensional) segments of thi
 	\Phi_{mn} & = \Phi_{mn}^{++} + \Phi_{mn}^{+-} + \Phi_{mn}^{-+} + \Phi_{mn}^{--} \label{eq:pmn_nodal}
 \end{align}
 The contributions to the vector potential are derived from (\ref{eq:Amn}). The superscripts refer to the positive and negative elements belonging to the basis functions $m$ and $n$ as defined in Figure~\ref{fig:mom_basis2}.
-\begin{figure}
+\begin{figure}[b]
 	\centering
 	\input{figures/mom_basis2.tex}
 	\caption{Definition of (non-overlapping) basis functions.}
@@ -92,7 +92,7 @@ Therefore, the scalar potential terms become
 
 \subsubsection{Self Terms}
 If the basis functions $n, m$ overlap (see Figure~\ref{fig:mom_basis3}), then we must treat the singularity that arises in the integral of the Green's function. We can do this by evaluating the inner integral analytically, and the outer integral numerically using an $M$-point quadrature rule. Assume that the singularity is in the $++$ direction (only possible when $m = n$). For the vector potential term,
-\begin{figure}[b]
+\begin{figure}[t]
 	\centering
 	\input{figures/mom_basis3.tex}
 	\caption{Definition of (overlapping) basis functions.}
@@ -118,7 +118,7 @@ To find an analytical expression for the integrals $S_1$ and $S_2$, we apply the
 \begin{equation*}
 	|\vecr - \vecrp| = \sqrt{(r - r^\prime)^2 + a^2}
 \end{equation*}
-Then, the two integrals can be evaluated analytically. The detailed derivation is presented in Gibson, 2022.
+Then, the two integrals can be evaluated analytically. The detailed derivation is presented in Gibson, 2021.
 \begin{equation}
 	\begin{aligned}
 		S_1(x, s) & = \frac{1}{4\pi} \left[ \frac{1}{s} \sqrt{a^2 + (x - s)^2} - \frac{1}{s} \sqrt{a^2 + x^2} \right. \\
@@ -132,7 +132,7 @@ Then, the two integrals can be evaluated analytically. The detailed derivation i
 
 \subsection{Practical Element-Wise Matrix Assembly}
 To assemble the system matrix equation (\ref{eq:system}), we loop over all pairs of nodal basis functions and calculate the contributions of each part using (\ref{eq:amn_nodal}), (\ref{eq:pmn_nodal}). A more practical method of matrix assembly is to loop over all pairs of elements, each with pre-defined basis functions (see Figure~\ref{fig:mom_basis4}).
-\begin{figure}
+\begin{figure}[b]
 	\centering
 	\input{figures/mom_basis4.tex}
 	\caption{Definition of element-local basis functions.}

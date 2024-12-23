@@ -1,1 +1,13 @@
+\clearpage
 \section{Introduction}
+In this document, we present a derivation of the method of moments (MoM) as applied to antenna modeling. It is intended for readers with a background in electromagnetics who seek to understand the theory behind the Method of Moments and its application to antenna design.
+
+The goal is to simulate the impedance and far-field radiation patterns of antennas constructed from wires which are thin compared to the wavelength. Specifically, we focus on antennas constructed from thin wires, where the wire diameter is small compared to the wavelength of operation. These antennas are prevalent in consumer electronics and amateur radio systems, among other applications. The document not only lays out the theoretical foundations but also demonstrates the application of the MoM through several practical examples, which are implemented and available in the Github repository:
+\begin{itemize}
+	\item Center-fed half-wave dipoles,
+	\item End-fed half-wave antennas,
+	\item Antennas with parasitic elements, such as Yagi-Uda arrays,
+	\item Loop antennas.
+\end{itemize}
+
+We begin with Maxwell's equations and derive an integral equation for the electric field in free space. Next, we apply the method of moments to discretize this integral equation using triangular basis functions. This results in a solvable system of linear equations. From the solution, our desired quantities (impedance and radiated power) can be calculated.
