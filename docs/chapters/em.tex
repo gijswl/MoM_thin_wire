@@ -8,7 +8,7 @@ In a homogeneous region with permittivity $\varepsilon$ and permeability $\mu$, 
 	\nabla \cdot \vec{D} & = \rho, \label{eq:maxwell_D} \\
 	\nabla \cdot \vec{B} & = 0, \label{eq:maxwell_B}
 \end{align}
-where $\vec{B} = \mu \vec{H}$ and $\vec{D} = \varepsilon \vec{E}$. We assume a time-harmonic formulation with time dependence $e^{j\omega t}$ throughout the text.
+where $\vec{B} = \mu \vec{H}$ and $\vec{D} = \varepsilon \vec{E}$. Throughout the text, we assume a time-harmonic formulation with time dependence $e^{j\omega t}$.
 
 \subsection{Green's Functions}
 A Green's function is the impulse response of a linear differential equations on a specified domain. Using the superposition principle, the solution of a differential equation can be expressed as a sum of Green's functions. This property will allow us to write an integral equation for the electric field in Section~\ref{sec:em_efie}.
@@ -18,7 +18,7 @@ Consider the electrostatic Poisson equation
 \begin{equation}
 	\nabla^2 \phi = -\frac{\rho}{\varepsilon},
 \end{equation}
-where $\rho$ is the charge density. To find the electric potential due to an arbitrary charge configuration, we can apply the method using the electrostatic Green's function as outlined above. First, we find the impulse response $G(r)$ such that
+where $\rho$ is the charge density. We can apply the Green's function method as outlined above to find the electric potential due to an arbitrary charge configuration. First, we find the impulse response $G(r)$ such that
 \begin{equation}
 	\nabla^2 G(\vecr) = -\frac{\delta(\vecr)}{\varepsilon}.
 \end{equation}

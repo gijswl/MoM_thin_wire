@@ -1,8 +1,8 @@
 \clearpage
 \section{Introduction}
-In this document, we present a derivation of the method of moments (MoM) as applied to antenna modeling. It is intended for readers with a background in electromagnetics who seek to understand the theory behind the Method of Moments and its application to antenna design.
+In this document, we present a derivation of the method of moments (MoM) applied to antenna modelling. It is intended for readers with a background in electromagnetics who want to understand the theory behind the MoM and its application in antenna design.
 
-The goal is to simulate the impedance and far-field radiation patterns of antennas constructed from wires which are thin compared to the wavelength. Specifically, we focus on antennas constructed from thin wires, where the wire diameter is small compared to the wavelength of operation. These antennas are prevalent in consumer electronics and amateur radio systems, among other applications. The document not only lays out the theoretical foundations but also demonstrates the application of the MoM through several practical examples, which are implemented and available in the Github repository:
+The primary objective is to simulate the impedance and far-field radiation patterns of antennas made from thin wires, particularly those where the wire diameter is much smaller than the wavelength of operation. These types of antennas are commonly found in consumer electronics and amateur radio systems, among other applications. The document not only lays out the theoretical foundations but also demonstrates the application of the MoM through several practical examples, which are available in the GitHub repository:
 \begin{itemize}
 	\item Center-fed half-wave dipoles,
 	\item End-fed half-wave antennas,
@@ -10,4 +10,4 @@ The goal is to simulate the impedance and far-field radiation patterns of antenn
 	\item Loop antennas.
 \end{itemize}
 
-We begin with Maxwell's equations and derive an integral equation for the electric field in free space. Next, we apply the method of moments to discretize this integral equation using triangular basis functions. This results in a solvable system of linear equations. From the solution, our desired quantities (impedance and radiated power) can be calculated.
+We begin with Maxwell's equations and derive an integral equation for the electric field in free space. We then apply the Method of Moments to discretize this integral equation using triangular basis functions. This process results in a solvable system of linear equations. From the solution, we can calculate our desired quantities, such as impedance and radiated power.

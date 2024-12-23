@@ -6,7 +6,7 @@ Starting from the EFIE, we expand the unknown current distribution $\vec{J}(\vec
 	\vec{J}(\vecr) = \sum_{n = 1}^{N} I_n \vec{f}_n(\vecr),
 	\label{eq:j_exp}
 \end{equation}
-where $I_n$ are the unknown coefficients representing the current, and $\vec{f}_n(\vecr)$ are the vector basis functions. Many choices of basis  are possible, but we will use the triangular basis functions shown in Figure~\ref{fig:mom_basis}. The orientation of the basis vectors $\hat{\vec{a}}_m$ is further discussed in Section~\ref{sec:mom_bc}.
+where $I_n$ are the unknown coefficients representing the current, and $\vec{f}_n(\vecr)$ are the vector basis functions. Many choices of basis are possible, but we will use the triangular basis functions shown in Figure~\ref{fig:mom_basis}. The orientation of the basis vectors $\hat{\vec{a}}_m$ is further discussed in Section~\ref{sec:mom_bc}.
 \begin{figure}[!ht]
 	\centering
 	\input{figures/mom_basis.tex}
@@ -55,7 +55,7 @@ where
 \begin{equation}
 	\int_{-1}^{+1} I(x) dx \approx \sum_{p = 1}^{M} w_p I(x_p),
 \end{equation}
-with quadrature weights $w_p$ and quadrature points $x_p$. In the Julia code, Gauss-Legendre quadrature is used.
+with quadrature weights $w_p$ and quadrature points $x_p$. In the Julia code, the Gauss-Legendre quadrature is used.
 
 \subsubsection{Non-Self Terms}
 The basis and testing functions are defined on (two-dimensional) segments of thin wire in three-dimensional space. Considering a pair of non-overlapping basis functions $n,m$, we can calculate the integrals numerically by applying a quadrature rule to both integrals. Because each shape function consists of two parts (for triangular basis functions), we can split the contributions into four parts.
@@ -91,7 +91,7 @@ Therefore, the scalar potential terms become
 \end{align*}
 
 \subsubsection{Self Terms}
-If the basis functions $n, m$ overlap (see Figure~\ref{fig:mom_basis3}), then we must treat the singularity that arises in the integral of the Green's function. We can do this by evaluating the inner integral analytically, and the outer integral numerically using an $M$-point quadrature rule. Assume that the singularity is in the $++$ direction (only possible when $m = n$). For the vector potential term,
+If the basis functions $n, m$ overlap (see Figure~\ref{fig:mom_basis3}), then we must treat the singularity that arises in the integral of the Green's function. We can do this by evaluating the inner integral analytically and the outer integral numerically using an $M$-point quadrature rule. Assume that the singularity is in the $++$ direction (only possible when $m = n$). For the vector potential term,
 \begin{figure}[t]
 	\centering
 	\input{figures/mom_basis3.tex}
@@ -114,7 +114,7 @@ where we define $S_1$ and $S_2$ as follows
 where $s$ is the length of the segment containing the singularity. 
 
 \subsubsection{Thin-Wire Approximation}
-To find an analytical expression for the integrals $S_1$ and $S_2$, we apply the thin-wire approximation. That is, we assume that the one-dimensional elements are in fact wires with a radius $a$ which is small compared to the length of the element $\ell_n$ and the wavelength $\lambda$. We redefine the distance between $\vecr$ and $\vecrp$ as
+We apply the thin-wire approximation to find an analytical expression for the integrals $S_1$ and $S_2$. That is, we assume that the one-dimensional elements are, in fact, wires with a radius $a$, which is small compared to the length of the element $\ell_n$ and the wavelength $\lambda$. We redefine the distance between $\vecr$ and $\vecrp$ as
 \begin{equation*}
 	|\vecr - \vecrp| = \sqrt{(r - r^\prime)^2 + a^2}
 \end{equation*}
@@ -151,7 +151,7 @@ Each element contributes to four locations in the system matrix ($[m_1, n_1]$, $
 \end{align}
 where $f_{m,p}^{(1)}$ is basis function $f_m^{(1)}$, evaluated at $\vecr_p$, etc. 
 
-It is now very easy to determine whether the self or non-self terms must be used, since there is only an overlap of basis functions when elements $m$ and $n$ are the same, i.e., $m = n$. The self-terms become
+It is now very easy to determine whether the self or non-self terms must be used since there is only an overlap of basis functions when elements $m$ and $n$ are the same, i.e., $m = n$. The self-terms become
 \begin{align}
 	A_{mm} & = \frac{\ell_m}{2} \sum_{p = 1}^M w_p \begin{bmatrix}
 		f_{m,p}^{(1)} & f_{m,p}^{(1)} \\
@@ -189,7 +189,7 @@ where $V_{src}$ is the known source voltage and $I_{src}$ is the solved current 
 \end{equation*}
 
 \subsubsection{Far-field radiation}
-The far-field radiation pattern can also be derived from the solved current vector. The EFIE can be simplified by assuming that the $\nicefrac{1}{r}$ are dominant, and that higher order terms have negligible amplitude in the far field.
+The far-field radiation pattern can also be derived from the solved current vector. The EFIE can be simplified by assuming that the $\nicefrac{1}{r}$ are dominant and that higher-order terms have negligible amplitude in the far field.
 \begin{equation}
 	\vec{E}(\vecr) = -j\omega\mu \int \vec{J}(\vecrp) G_k(\vecr, \vecrp) d\vecrp
 	\label{eq:ff_efie}
@@ -210,4 +210,4 @@ Applying the same discretization procedure,
 \begin{equation}
 	\vec{E}(\vecr) = j\omega\mu \frac{e^{-j k r}}{4\pi r} \sum_{n = 1}^{N} I_n \int_{f_n} ((\hat{\vecr} \cdot \hat{\vec{a}}_n) \hat{\vecr} - \hat{\vec{a}}_n) f_n(\vecrp) e^{j k \vecrp \cdot \hat{\vecr}} d\vecrp
 \end{equation}
-The integral can be tackled using quadrature and all the terms are known.
+The integral can be tackled using quadrature, and all the terms are known.
