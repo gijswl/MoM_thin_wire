@@ -6,7 +6,7 @@ Starting from the EFIE, we expand the unknown current distribution $\vec{J}(\vec
 	\vec{J}(\vecr) = \sum_{n = 1}^{N} I_n \vec{f}_n(\vecr),
 	\label{eq:j_exp}
 \end{equation}
-where $I_n$ are the unknown coefficients representing the current, and $\vec{f}_n(\vecr)$ are the vector basis functions. Many choices of basis  are possible, but we will use the triangular basis functions shown in Figure~\ref{fig:mom_basis}. The orientation of the basis vectors is further discussed in Section~\ref{sec:mom_bc}.
+where $I_n$ are the unknown coefficients representing the current, and $\vec{f}_n(\vecr)$ are the vector basis functions. Many choices of basis  are possible, but we will use the triangular basis functions shown in Figure~\ref{fig:mom_basis}. The orientation of the basis vectors $\hat{\vec{a}}_m$ is further discussed in Section~\ref{sec:mom_bc}.
 \begin{figure}[!ht]
 	\centering
 	\input{figures/mom_basis.tex}
@@ -32,6 +32,7 @@ This results in a dense, square $N \times N$ system of equations.
 	\end{bmatrix} \begin{Bmatrix}
 		I
 	\end{Bmatrix},
+	\label{eq:system}
 \end{equation}
 with
 \begin{align*}
@@ -59,8 +60,8 @@ with quadrature weights $w_p$ and quadrature points $x_p$. In the Julia code, Ga
 \subsubsection{Non-Self Terms}
 The basis and testing functions are defined on (two-dimensional) segments of thin wire in three-dimensional space. Considering a pair of non-overlapping basis functions $n,m$, we can calculate the integrals numerically by applying a quadrature rule to both integrals. Because each shape function consists of two parts (for triangular basis functions), we can split the contributions into four parts.
 \begin{align}
-	A_{mn} & = A_{mn}^{++} + A_{mn}^{+-} + A_{mn}^{-+} + A_{mn}^{--} \\
-	\Phi_{mn} & = \Phi_{mn}^{++} + \Phi_{mn}^{+-} + \Phi_{mn}^{-+} + \Phi_{mn}^{--}
+	A_{mn} & = A_{mn}^{++} + A_{mn}^{+-} + A_{mn}^{-+} + A_{mn}^{--} \label{eq:amn_nodal} \\
+	\Phi_{mn} & = \Phi_{mn}^{++} + \Phi_{mn}^{+-} + \Phi_{mn}^{-+} + \Phi_{mn}^{--} \label{eq:pmn_nodal}
 \end{align}
 The contributions to the vector potential are derived from (\ref{eq:Amn}). The superscripts refer to the positive and negative elements belonging to the basis functions $m$ and $n$ as defined in Figure~\ref{fig:mom_basis2}.
 \begin{figure}
@@ -103,7 +104,7 @@ If the basis functions $n, m$ overlap (see Figure~\ref{fig:mom_basis3}), then we
 \end{align*}
 And for the scalar potential term,
 \begin{equation*}
-	\Phi_{mn}^{++} = \frac{\ell_m^+}{2} \sum_{p = 1}^M w_p \frac{1}{\ell_m^+ \ell_n^+} \int_{f_n} G(\vecr_p^+, \vecrp) d\vecrp  = \frac{\ell_m^+}{2} \sum_{p = 1}^M w_p S_2(\vecr_p^+)
+	\Phi_{mn}^{++} = \frac{\ell_m^+}{2} \sum_{p = 1}^M w_p \frac{1}{\ell_m^+ \ell_n^+} \int_{f_n} G(\vecr_p^+, \vecrp) d\vecrp = \frac{\ell_m^+}{2} \sum_{p = 1}^M w_p S_2(\vecr_p^+)
 \end{equation*}
 where we define $S_1$ and $S_2$ as follows
 \begin{align}
@@ -129,7 +130,37 @@ Then, the two integrals can be evaluated analytically. The detailed derivation i
 	S_2(x, s) = \frac{1}{4\pi s^2} \left[ \frac{\log\left( x + \sqrt{x^2 + a^2} \right)}{x - s + \sqrt{a^2 + (x - s)^2}} - j k s\right]
 \end{equation}
 
-\subsection{Practical Matrix Assembly per Element}
+\subsection{Practical Element-Wise Matrix Assembly}
+To assemble the system matrix equation (\ref{eq:system}), we loop over all pairs of nodal basis functions and calculate the contributions of each part using (\ref{eq:amn_nodal}), (\ref{eq:pmn_nodal}). A more practical method of matrix assembly is to loop over all pairs of elements, each with pre-defined basis functions (see Figure~\ref{fig:mom_basis4}).
+\begin{figure}
+	\centering
+	\input{figures/mom_basis4.tex}
+	\caption{Definition of element-local basis functions.}
+	\label{fig:mom_basis4}
+\end{figure}
+
+Each element contributes to four locations in the system matrix ($[m_1, n_1]$, $[m_1, n_2]$, $[m_2, n_1]$, $[m_2, n_2]$), allowing the local contribution to be written conveniently as a $2 \times 2$ matrix. This way of constructing the local contribution is very similar to the way this is done in the finite element method.
+\begin{align}
+	A_{mn} & = \hat{\vec{a}}_m \cdot \hat{\vec{a}}_n \frac{\ell_m \ell_n}{4} \sum_{p = 1}^M \sum_{q = 1}^M w_p w_q \begin{bmatrix}
+		f_{m,p}^{(1)} f_{n,q}^{(1)} & f_{m,p}^{(1)} f_{n,q}^{(2)} \\
+		f_{m,p}^{(2)} f_{n,q}^{(1)} & f_{m,p}^{(2)} f_{n,q}^{(2)}
+	\end{bmatrix} G(\vec{r}_p, \vec{r}_q) \\
+	\Phi_{mn} & = \frac{1}{4} \sum_{p = 1}^M \sum_{q = 1}^M w_p w_q \begin{bmatrix}
+		+1 & -1 \\ -1 & +1
+	\end{bmatrix} G(\vec{r}_p, \vec{r}_q)
+\end{align}
+where $f_{m,p}^{(1)}$ is basis function $f_m^{(1)}$, evaluated at $\vecr_p$, etc. 
+
+It is now very easy to determine whether the self or non-self terms must be used, since there is only an overlap of basis functions when elements $m$ and $n$ are the same, i.e., $m = n$. The self-terms become
+\begin{align}
+	A_{mm} & = \frac{\ell_m}{2} \sum_{p = 1}^M w_p \begin{bmatrix}
+		f_{m,p}^{(1)} & f_{m,p}^{(1)} \\
+		f_{m,p}^{(2)} & f_{m,p}^{(2)}
+	\end{bmatrix} S_1(\vecr_p) \\
+	\Phi_{mm} & = \frac{\ell_m}{2} \sum_{p = 1}^M w_p \begin{bmatrix}
+		+1 & -1 \\ -1 & +1
+	\end{bmatrix} S_2(\vecr_p)
+\end{align}
 
 \subsection{Boundary Conditions}
 \label{sec:mom_bc}
