@@ -6,7 +6,7 @@ Starting from the EFIE, we expand the unknown current distribution $\vec{J}(\vec
 	\vec{J}(\vecr) = \sum_{n = 1}^{N} I_n \vec{f}_n(\vecr),
 	\label{eq:j_exp}
 \end{equation}
-where $I_n$ are the unknown coefficients representing the current, and $\vec{f}_n(\vecr)$ are the vector basis functions. Many choices of basis are possible, but we will use the triangular basis functions shown in Figure~\ref{fig:mom_basis}. The orientation of the basis vectors $\hat{\vec{a}}_m$ is further discussed in Section~\ref{sec:mom_bc}.
+where $I_n$ are the unknown coefficients representing the nodal currents, and $\vec{f}_n(\vecr)$ are the vector basis functions. Many choices of basis are possible, but we will use the triangular basis functions shown in Figure~\ref{fig:mom_basis}. The orientation of the basis vectors $\hat{\vec{a}}_m$ is further discussed in Section~\ref{sec:mom_bc}.
 \begin{figure}[!ht]
 	\centering
 	\input{figures/mom_basis.tex}
@@ -14,7 +14,7 @@ where $I_n$ are the unknown coefficients representing the current, and $\vec{f}_
 	\label{fig:mom_basis}
 \end{figure}
 
-Substituting (\ref{eq:j_exp}) into the EFIE, the $\oL$ operator now operates on the (known) basis functions.
+Substituting (\ref{eq:j_exp}) into the surface EFIE (\ref{eq:surf_efie}), the $\oL$ operator now operates on the (known) basis functions.
 \begin{equation}
 	\vec{E}(\vecr) = j\omega\mu \sum_{n = 1}^{N} I_n (\oL \vec{f}_n)(\vecr)
 	\label{eq:efie_exp}
@@ -64,7 +64,7 @@ The basis and testing functions are defined on (two-dimensional) segments of thi
 	\Phi_{mn} & = \Phi_{mn}^{++} + \Phi_{mn}^{+-} + \Phi_{mn}^{-+} + \Phi_{mn}^{--} \label{eq:pmn_nodal}
 \end{align}
 The contributions to the vector potential are derived from (\ref{eq:Amn}). The superscripts refer to the positive and negative elements belonging to the basis functions $m$ and $n$ as defined in Figure~\ref{fig:mom_basis2}.
-\begin{figure}[b]
+\begin{figure}[t]
 	\centering
 	\input{figures/mom_basis2.tex}
 	\caption{Definition of (non-overlapping) basis functions.}
@@ -92,7 +92,7 @@ Therefore, the scalar potential terms become
 
 \subsubsection{Self Terms}
 If the basis functions $n, m$ overlap (see Figure~\ref{fig:mom_basis3}), then we must treat the singularity that arises in the integral of the Green's function. We can do this by evaluating the inner integral analytically and the outer integral numerically using an $M$-point quadrature rule. Assume that the singularity is in the $++$ direction (only possible when $m = n$). For the vector potential term,
-\begin{figure}[t]
+\begin{figure}[b]
 	\centering
 	\input{figures/mom_basis3.tex}
 	\caption{Definition of (overlapping) basis functions.}

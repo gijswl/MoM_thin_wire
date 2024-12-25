@@ -103,3 +103,17 @@ where
 \begin{equation}
 	(\oL\vec{X})(\vecr) = \iiint G(\vecr, \vecrp) \left[ 1 + \frac{\nabla^\prime \nabla^\prime}{k^2} \right] \vec{X}(\vecrp) d\vecrp
 \end{equation}
+Let the total electric field be written as a combination of the scattered field (due to an induced current density $\vec{J}$) and the incident field: $\vec{E} = \vec{E}^{s} + \vec{E}^{i}$. At the boundary of a conducting surface $S$, the following holds:
+\begin{equation}
+	\hat{\vec{n}}(\vecr) \times \left[ \vec{E}^i(\vecr) + \vec{E}^s(\vecr) \right] = 0,
+\end{equation}
+where $\hat{\vec{n}}(\vecr)$ is the surface normal at $\vecr \in S$. Thus, we can rewrite the ``surface'' integral equation as
+\begin{equation}
+	-\hat{\vec{n}}(\vecr) \times \vec{E}^i(\vecr) = \hat{\vec{n}}(\vecr) \times -j\omega\mu(\oL \vec{J})(\vecr)
+\end{equation}
+Finally, we can drop the $\hat{\vec{n}} \times$ and implicitly assume that the vectorial quantities are tangential to the conducting surface.
+\begin{equation}
+	\vec{E}^i(\vecr) = j\omega\mu(\oL \vec{J})(\vecr)
+	\label{eq:surf_efie}
+\end{equation}
+Observe that this equation is very similar to the original EFIE in (\ref{eq:efie}), but with a reversed sign. The domain of integration is now restricted to the conducting surfaces.
