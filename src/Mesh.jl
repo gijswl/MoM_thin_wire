@@ -1,11 +1,11 @@
 using LinearAlgebra
 
 struct Mesh
-    nodes       # N × 3 matrix of node coordinates
-    edges       # M-element vector of [n1, n2] edges
-    end_points  # Vector of nodes connected to only one edge
-    basis_vecs  # M × 3 matrix of basis vectors on the edges
-    wire_radius # Wire radius (assumed to be equal for all edges)
+    nodes::Matrix{Float64}      # N × 3 matrix of node coordinates
+    edges::Vector{Vector{Int}}  # M-element vector of [n1, n2] edges
+    end_points::Vector{Int}     # Vector of nodes connected to only one edge
+    basis_vecs::Matrix{Float64} # M × 3 matrix of basis vectors on the edges
+    wire_radius::Float64        # Wire radius (assumed to be equal for all edges)
 end
 
 """
@@ -32,7 +32,7 @@ function mesh_loop(x, R, Nel, start_idx)
     for (i, θ) ∈ enumerate(θs)
         nodes[i, :] = [(R * cos(θ)) (R * sin(θ)) 0] .+ x
     end
-    
+
     edges = [[i, i + 1] for i ∈ (start_idx:start_idx+Nel-1)]
     edges[end][2] = edges[1][1] # Close the loop
 

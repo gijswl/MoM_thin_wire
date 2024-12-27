@@ -50,8 +50,14 @@ function assemble!(Amn::Matrix{<:Complex}, Φmn::Matrix{<:Complex}, quad::Vector
     nn1 = @view nn[1, :]
     nn2 = @view nn[2, :]
 
+    A0 = zeros(Complex{Float64}, 2, 2)
+    Φ0 = [1 -1; -1 1]
+
+    bdot = bm ⋅ bn
+
     @inbounds for qp ∈ quad
-        ξp = qp[1]; wp = qp[2]
+        ξp = qp[1]
+        wp = qp[2]
 
         fm1 = 0.5 * (1 - ξp)
         fm2 = 0.5 * (1 + ξp)
@@ -62,19 +68,29 @@ function assemble!(Amn::Matrix{<:Complex}, Φmn::Matrix{<:Complex}, quad::Vector
         if (m == n)
             ζp = 0.5 * (ξp + 1) * ℓm
 
-            Amn .+= 0.5 * ℓm * wp * S1(ζp, ℓm, a, k) .* [fm1 fm1; fm2 fm2]
-            Φmn .+= 0.5 * ℓm * wp * S2(ζp, ℓm, a, k) .* [1 -1; -1 1]
+            A0[1, 1:2] .= fm1
+            A0[2, 1:2] .= fm2
+
+            Amn .+= 0.5 * ℓm * wp * S1(ζp, ℓm, a, k) .* A0
+            Φmn .+= 0.5 * ℓm * wp * S2(ζp, ℓm, a, k) .* Φ0
 
         else # Otherwise, evaluate both integrals numerically.
             @inbounds for qq ∈ quad
-                ξq = qq[1]; wq = qq[2]
+                ξq = qq[1]
+                wq = qq[2]
 
                 fn1 = 0.5 * (1 - ξq)
                 fn2 = 0.5 * (1 + ξq)
                 rq = fn1 .* nn1 .+ fn2 .* nn2
 
-                Amn .+= 0.25 * ℓm * ℓn * wp * wq * (bm ⋅ bn) * G(k, rp, rq) .* [(fm1*fn1) (fm1*fn2); (fm2*fn1) (fm2*fn2)]
-                Φmn .+= 0.25 * wp * wq * G(k, rp, rq) .* [1 -1; -1 1]
+                A0[1, 1] = fm1 * fn1
+                A0[1, 2] = fm1 * fn2
+                A0[2, 1] = fm2 * fn1
+                A0[2, 2] = fm2 * fn2
+
+                Gpq = G(k, rp, rq)
+                Amn .+= 0.25 * ℓm * ℓn * wp * wq * bdot * Gpq .* A0
+                Φmn .+= 0.25 * wp * wq * Gpq .* Φ0
             end
         end
     end
